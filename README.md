@@ -14,7 +14,8 @@ Pre-processing: Data Collection via Watson Personality Insight API (not shown)
   - this data can be pulled via the Watson API shown in the Aspiration Model repo and transformed to this format
   - there is also a column called 'Brand Flown' which is the target variable to predict psychographic propensities for. There are many ways to obtain this including via survey results or other source.
 
-The model can be executed in two ways:
+This repo has two branches, to account for the two ways this model can be run:
+
 Approach A: Quick Route
 - Loading the data set, appending psychographic dimensions via a pre-trained model, and running the logistic regression for brand preference
 
