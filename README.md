@@ -19,5 +19,5 @@ This repo has two branches, to account for the two ways this model can be run:
 Approach A: Quick Route
 - Loading the data set, appending psychographic dimensions via a pre-trained model, and running the logistic regression for brand preference
 
-Approach B: Exploratory Route
+Approach B: Full Exploratory Route
 - Loading the data set, running the factor analysis to explore the meanings of each dimension then running the logistic regression for brand preference
