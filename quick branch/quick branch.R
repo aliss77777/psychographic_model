@@ -1,8 +1,10 @@
 # 0. initialize WD and load file -----------------------------------
 
 # load data file with pre-trained model
-setwd("~/Egnyte/Private/alexander.liss/0_MarSci_Practice/1_CodingTutorials/psychographic_model/quick_branch")
-load("~/Egnyte/Private/alexander.liss/0_MarSci_Practice/1_CodingTutorials/psychographic_model/quick_branch/psychgraphic_model.RData")
+setwd("~/Egnyte/Private/alexander.liss/0_MarSci_Practice/1_CodingTutorials/psychographic_model/quick branch")
+#load("~/Egnyte/Private/alexander.liss/0_MarSci_Practice/1_CodingTutorials/psychographic_model/quick branch/psychgraphic_model.RData")
+load("psychgraphic_model.RData")
+
 
 library(tidyverse)
 options(digits = 2)
@@ -13,16 +15,18 @@ set.seed(42) # for reproducible results
 library(caret) # you use the model_list object in the data file to apply the propensities
 
 #load this data file when starting from the beginning 
-new.data.full <- read.csv("sample data.csv")
+new.data.full <- read.csv("sample data with GUID.csv")
+#new.data.full <- read.csv("sample data with GUID and kantar.csv")
 
-features.for.predictive.model <- new.data.full[2:66] # removing unnecessary columns (velo.id) , brand flown, for predictive model
+
+features.for.predictive.model <- new.data.full[2:63] # removing unnecessary columns (velo.id) , brand flown, for predictive model
 for (i in 1:length(modelnames)){
   temp_column <- data.frame(predict(model_list[i][[1]], newdata = features.for.predictive.model))
   names(temp_column) <- modelnames[i]
   features.for.predictive.model <- cbind(features.for.predictive.model, temp_column)
   rm(temp_column)
 }
-data_with_psychographic_propensities <- cbind(new.data.full[c(1,69)], features.for.predictive.model) #this adds back the info that got removed - Brand Flown (target variable)
+data_with_psychographic_propensities <- cbind(new.data.full[c(1,66)], features.for.predictive.model) #this adds back the info that got removed - Brand Flown (target variable)
 #write.csv(data_with_psychographic_propensities, "data.with.psychographic.propensities.csv", row.names = FALSE)
 
 # 2. Applying Logistics Regression across brands --------------------------
@@ -33,7 +37,7 @@ library(effects)
 barplot(table(data_with_psychographic_propensities$BrandFlown))
 
 # selecting just a few columns for modeling
-modeling.data <- data_with_psychographic_propensities[c(2,68:77)]
+modeling.data <- data_with_psychographic_propensities[c(2,65:74)]
 
 unique(modeling.data$BrandFlown)
 
@@ -121,7 +125,7 @@ importance_scores_index_each_brand <- importance_scores_index_each_brand %>% #ga
 # adding one more column - the mean propensity scores for each brand
 propensity_by_brand <- data_with_psychographic_propensities %>%
   group_by(BrandFlown) %>%
-  select(BrandFlown, 68:77) %>% 
+  select(BrandFlown, 65:74) %>% 
   summarise_all(funs(mean(., na.rm = TRUE))) %>%
   gather(key = Propensity, value = Mean_Propensity, 2:11)
 
@@ -152,12 +156,12 @@ propensity_three <- GLM_scores[3,2]
 # scatter plot of how Emirates compared to other brands according to our key propensities
 data_for_visualization %>%
   group_by(BrandFlown) %>%
-  select(propensity_one, propensity_three) %>% 
+  select(propensity_three, propensity_two) %>% 
   summarise_all(funs(mean(., na.rm = TRUE))) %>%
   ggplot(aes(x=Spirituality.and.Wellness, 
-           y=Stability.1,
+           y=Stability_1,
            color=BrandFlown)) + 
-  geom_point() + scale_y_reverse() #reversing y axis for Emirates specifically
+  geom_point() + scale_y_reverse() + scale_x_reverse() #reversing y axis for Emirates specifically
 
 final_coefficients_output$`Psychographic Dimension` <- as.factor(final_coefficients_output$`Psychographic Dimension`)
 
